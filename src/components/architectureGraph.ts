@@ -520,6 +520,16 @@ export class ArchitectureGraphVisualizer {
   private isSimulating = false;
   private simTimer: number | null = null;
 
+  private draggingNode: GraphNode | null = null;
+  private draggingGroup: SVGGElement | null = null;
+  private dragStartSvg = { x: 0, y: 0 };
+  private dragStartNode = { x: 0, y: 0 };
+  private hasDragged = false;
+  private renderedEdges: { edge: GraphEdge; path: SVGPathElement; label: SVGTextElement | null }[] = [];
+
+  private boundPointerMove = (e: PointerEvent) => this.handlePointerMove(e);
+  private boundPointerUp = () => this.handlePointerUp();
+
   constructor(container: HTMLElement) {
     this.container = container;
   }
@@ -563,8 +573,8 @@ export class ArchitectureGraphVisualizer {
         <!-- Visual Canvas & Inspector Layout -->
         <div style="display: grid; grid-template-columns: 1fr 340px; min-height: 480px; position: relative;">
           <!-- SVG Graph Area -->
-          <div id="svg-graph-viewport" style="position: relative; overflow: auto; background: radial-gradient(circle at center, #0e1424 0%, #060810 100%); cursor: grab;">
-            <svg id="architecture-svg" width="1120" height="520" style="display: block;"></svg>
+          <div id="svg-graph-viewport" style="position: relative; overflow: auto; background: radial-gradient(circle at center, #0e1424 0%, #060810 100%); cursor: default; user-select: none;">
+            <svg id="architecture-svg" width="1120" height="520" style="display: block; touch-action: none;"></svg>
           </div>
 
           <!-- Node Inspector Drawer -->
@@ -642,12 +652,25 @@ export class ArchitectureGraphVisualizer {
     });
 
     btnSim.addEventListener('click', () => {
-      this.startSimulation();
+      if (this.isSimulating) {
+        soundManager.playClick();
+        this.stopSimulation();
+      } else {
+        this.startSimulation();
+      }
     });
+
+    window.removeEventListener('pointermove', this.boundPointerMove);
+    window.removeEventListener('pointerup', this.boundPointerUp);
+    window.removeEventListener('pointercancel', this.boundPointerUp);
+    window.addEventListener('pointermove', this.boundPointerMove);
+    window.addEventListener('pointerup', this.boundPointerUp);
+    window.addEventListener('pointercancel', this.boundPointerUp);
   }
 
   private switchPreset(preset: GraphPreset) {
     this.stopSimulation();
+    this.simulationIndex = 0;
     this.currentPreset = preset;
     const title = this.container.querySelector('#graph-preset-title') as HTMLElement;
     const subtitle = this.container.querySelector('#graph-preset-subtitle') as HTMLElement;
@@ -701,23 +724,12 @@ export class ArchitectureGraphVisualizer {
     // 1. Draw Edges
     const edgesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     edgesGroup.setAttribute('class', 'edges-group');
+    this.renderedEdges = [];
 
     this.currentPreset.edges.forEach((edge) => {
-      const fromNode = this.currentPreset.nodes.find((n) => n.id === edge.from);
-      const toNode = this.currentPreset.nodes.find((n) => n.id === edge.to);
-      if (!fromNode || !toNode) return;
-
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       const isActiveEdge = activeNodeId && (edge.from === activeNodeId || edge.to === activeNodeId);
 
-      // Curved bezier path
-      const dx = toNode.x - fromNode.x;
-      const dy = toNode.y - fromNode.y;
-      const mx = (fromNode.x + toNode.x) / 2;
-      const my = (fromNode.y + toNode.y) / 2 + (dx === 0 ? 0 : dy * 0.2);
-
-      const d = `M ${fromNode.x} ${fromNode.y} Q ${mx} ${my} ${toNode.x} ${toNode.y}`;
-      path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
       path.setAttribute('stroke', isActiveEdge ? 'url(#active-edge-grad)' : 'rgba(56, 189, 248, 0.3)');
       path.setAttribute('stroke-width', isActiveEdge ? '3' : '1.5');
@@ -730,18 +742,20 @@ export class ArchitectureGraphVisualizer {
 
       edgesGroup.appendChild(path);
 
-      // Edge condition label
-      if (edge.label && Math.abs(dx) > 60) {
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', String(mx));
-        text.setAttribute('y', String(my - 6));
-        text.setAttribute('fill', '#94a3b8');
-        text.setAttribute('font-size', '10');
-        text.setAttribute('font-family', 'var(--font-mono)');
-        text.setAttribute('text-anchor', 'middle');
-        text.textContent = edge.label;
-        edgesGroup.appendChild(text);
+      let labelEl: SVGTextElement | null = null;
+      if (edge.label) {
+        labelEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        labelEl.setAttribute('fill', '#94a3b8');
+        labelEl.setAttribute('font-size', '10');
+        labelEl.setAttribute('font-family', 'var(--font-mono)');
+        labelEl.setAttribute('text-anchor', 'middle');
+        labelEl.textContent = edge.label;
+        edgesGroup.appendChild(labelEl);
       }
+
+      const entry = { edge, path, label: labelEl };
+      this.updateEdgeElement(entry);
+      this.renderedEdges.push(entry);
     });
 
     svg.appendChild(edgesGroup);
@@ -753,7 +767,7 @@ export class ArchitectureGraphVisualizer {
     this.currentPreset.nodes.forEach((node) => {
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
-      g.setAttribute('cursor', 'pointer');
+      g.setAttribute('cursor', 'grab');
 
       const isSelected = this.selectedNode?.id === node.id;
       const isActive = activeNodeId === node.id;
@@ -822,18 +836,99 @@ export class ArchitectureGraphVisualizer {
       sub.textContent = node.sublabel;
       g.appendChild(sub);
 
-      // Interactivity
-      g.addEventListener('click', () => {
-        soundManager.playClick();
-        this.selectedNode = node;
-        this.updateInspector(node);
-        this.drawGraph(node.id);
+      // Interactivity (drag & click)
+      g.addEventListener('pointerdown', (e: PointerEvent) => {
+        if (e.button !== 0) return;
+        e.stopPropagation();
+        this.draggingNode = node;
+        this.draggingGroup = g;
+        this.hasDragged = false;
+        this.dragStartSvg = this.clientToSvgCoords(svg, e.clientX, e.clientY);
+        this.dragStartNode = { x: node.x, y: node.y };
+        g.setAttribute('cursor', 'grabbing');
+        try {
+          g.setPointerCapture(e.pointerId);
+        } catch {
+          // Ignore if pointer capture is unavailable
+        }
       });
 
       nodesGroup.appendChild(g);
     });
 
     svg.appendChild(nodesGroup);
+  }
+
+  private clientToSvgCoords(svg: SVGSVGElement, clientX: number, clientY: number): { x: number; y: number } {
+    const rect = svg.getBoundingClientRect();
+    const svgWidth = svg.width.baseVal.value || 1120;
+    const svgHeight = svg.height.baseVal.value || 520;
+    return {
+      x: ((clientX - rect.left) / (rect.width || 1)) * svgWidth,
+      y: ((clientY - rect.top) / (rect.height || 1)) * svgHeight,
+    };
+  }
+
+  private updateEdgeElement(entry: { edge: GraphEdge; path: SVGPathElement; label: SVGTextElement | null }) {
+    const fromNode = this.currentPreset.nodes.find((n) => n.id === entry.edge.from);
+    const toNode = this.currentPreset.nodes.find((n) => n.id === entry.edge.to);
+    if (!fromNode || !toNode) return;
+
+    const dx = toNode.x - fromNode.x;
+    const dy = toNode.y - fromNode.y;
+    const mx = (fromNode.x + toNode.x) / 2;
+    const my = (fromNode.y + toNode.y) / 2 + (dx === 0 ? 0 : dy * 0.2);
+
+    entry.path.setAttribute('d', `M ${fromNode.x} ${fromNode.y} Q ${mx} ${my} ${toNode.x} ${toNode.y}`);
+    if (entry.label) {
+      entry.label.setAttribute('x', String(mx));
+      entry.label.setAttribute('y', String(my - 6));
+      entry.label.style.display = Math.abs(dx) > 60 ? '' : 'none';
+    }
+  }
+
+  private handlePointerMove(e: PointerEvent) {
+    if (!this.draggingNode || !this.draggingGroup) return;
+    const svg = this.container.querySelector('#architecture-svg') as SVGSVGElement | null;
+    if (!svg) return;
+
+    const curr = this.clientToSvgCoords(svg, e.clientX, e.clientY);
+    const dx = curr.x - this.dragStartSvg.x;
+    const dy = curr.y - this.dragStartSvg.y;
+
+    if (!this.hasDragged && Math.hypot(dx, dy) > 4) {
+      this.hasDragged = true;
+    }
+
+    if (this.hasDragged) {
+      this.draggingNode.x = Math.max(75, Math.min(1045, Math.round(this.dragStartNode.x + dx)));
+      this.draggingNode.y = Math.max(40, Math.min(480, Math.round(this.dragStartNode.y + dy)));
+      this.draggingGroup.setAttribute('transform', `translate(${this.draggingNode.x}, ${this.draggingNode.y})`);
+
+      for (const entry of this.renderedEdges) {
+        if (entry.edge.from === this.draggingNode.id || entry.edge.to === this.draggingNode.id) {
+          this.updateEdgeElement(entry);
+        }
+      }
+    }
+  }
+
+  private handlePointerUp() {
+    if (!this.draggingNode) return;
+    const node = this.draggingNode;
+    const dragged = this.hasDragged;
+    this.draggingNode = null;
+    this.draggingGroup = null;
+    this.hasDragged = false;
+
+    if (!dragged) {
+      soundManager.playClick();
+      this.selectedNode = node;
+      this.updateInspector(node);
+      this.drawGraph(node.id);
+    } else {
+      this.drawGraph(this.selectedNode?.id ?? null);
+    }
   }
 
   private getNodeColor(category: GraphNode['category']): string {
@@ -911,7 +1006,6 @@ export class ArchitectureGraphVisualizer {
     if (!this.currentPreset.simulationSteps || this.currentPreset.simulationSteps.length === 0) return;
     this.stopSimulation();
     this.isSimulating = true;
-    this.simulationIndex = 0;
 
     const simBtn = this.container.querySelector('#btn-simulate-spin') as HTMLButtonElement;
     if (simBtn) simBtn.innerHTML = '<span>⏸ Pause Sim</span>';
@@ -946,5 +1040,8 @@ export class ArchitectureGraphVisualizer {
 
   public destroy() {
     this.stopSimulation();
+    window.removeEventListener('pointermove', this.boundPointerMove);
+    window.removeEventListener('pointerup', this.boundPointerUp);
+    window.removeEventListener('pointercancel', this.boundPointerUp);
   }
 }

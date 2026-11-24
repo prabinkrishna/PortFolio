@@ -259,6 +259,97 @@ export function renderTechnicalRD(): HTMLElement {
   return section;
 }
 
+async function hmacSha256Hex(secret: string, msg: string): Promise<string> {
+  const enc = new TextEncoder();
+  if (window.crypto?.subtle) {
+    const key = await window.crypto.subtle.importKey(
+      'raw',
+      enc.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const sig = await window.crypto.subtle.sign('HMAC', key, enc.encode(msg));
+    return Array.from(new Uint8Array(sig))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
+  return hmacSha256Fallback(enc.encode(secret), enc.encode(msg));
+}
+
+function sha256Bytes(data: Uint8Array): Uint8Array {
+  const K = new Uint32Array([
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+  ]);
+  const H = new Uint32Array([
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
+  ]);
+  const len = data.length;
+  const paddedLen = Math.ceil((len + 9) / 64) * 64;
+  const padded = new Uint8Array(paddedLen);
+  padded.set(data);
+  padded[len] = 0x80;
+  const bitLen = len * 8;
+  const view = new DataView(padded.buffer);
+  view.setUint32(paddedLen - 8, Math.floor(bitLen / 0x100000000), false);
+  view.setUint32(paddedLen - 4, bitLen >>> 0, false);
+
+  const w = new Uint32Array(64);
+  const rotr = (x: number, n: number) => (x >>> n) | (x << (32 - n));
+
+  for (let i = 0; i < paddedLen; i += 64) {
+    for (let t = 0; t < 16; t++) w[t] = view.getUint32(i + t * 4, false);
+    for (let t = 16; t < 64; t++) {
+      const s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
+      const s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
+      w[t] = (w[t - 16] + s0 + w[t - 7] + s1) >>> 0;
+    }
+    let [a, b, c, d, e, f, g, h] = H;
+    for (let t = 0; t < 64; t++) {
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const temp1 = (h + S1 + ch + K[t] + w[t]) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const temp2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + temp1) >>> 0;
+      d = c; c = b; b = a; a = (temp1 + temp2) >>> 0;
+    }
+    H[0] = (H[0] + a) >>> 0; H[1] = (H[1] + b) >>> 0; H[2] = (H[2] + c) >>> 0; H[3] = (H[3] + d) >>> 0;
+    H[4] = (H[4] + e) >>> 0; H[5] = (H[5] + f) >>> 0; H[6] = (H[6] + g) >>> 0; H[7] = (H[7] + h) >>> 0;
+  }
+  const out = new Uint8Array(32);
+  const outView = new DataView(out.buffer);
+  for (let i = 0; i < 8; i++) outView.setUint32(i * 4, H[i], false);
+  return out;
+}
+
+function hmacSha256Fallback(key: Uint8Array, msg: Uint8Array): string {
+  const blockSize = 64;
+  const k = key.length > blockSize ? sha256Bytes(key) : key;
+  const oPad = new Uint8Array(blockSize + 32);
+  const iPad = new Uint8Array(blockSize + msg.length);
+  oPad.fill(0x5c, 0, blockSize);
+  iPad.fill(0x36, 0, blockSize);
+  for (let i = 0; i < k.length; i++) {
+    oPad[i] ^= k[i];
+    iPad[i] ^= k[i];
+  }
+  iPad.set(msg, blockSize);
+  oPad.set(sha256Bytes(iPad), blockSize);
+  return Array.from(sha256Bytes(oPad))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
 async function setupRngCalculator(section: HTMLElement) {
   const serverSeedInput = section.querySelector('#rng-server-seed') as HTMLInputElement;
   const clientSeedInput = section.querySelector('#rng-client-seed') as HTMLInputElement;
@@ -277,28 +368,18 @@ async function setupRngCalculator(section: HTMLElement) {
   const r2Stop = section.querySelector('#rng-r2-stop') as HTMLElement;
   const r3Stop = section.querySelector('#rng-r3-stop') as HTMLElement;
   const statusEl = section.querySelector('#rng-outcome-status') as HTMLElement;
+  let verifyCount = 0;
 
-  async function calculate() {
-    soundManager.playClick();
+  async function calculate(isUserAction = true) {
+    if (isUserAction) {
+      soundManager.playClick();
+    }
     const serverSeed = serverSeedInput.value.trim() || 'default-server-seed';
     const clientSeed = clientSeedInput.value.trim() || 'default-client-seed';
     const nonce = parseInt(nonceInput.value, 10) || 1;
 
     try {
-      const enc = new TextEncoder();
-      const key = await window.crypto.subtle.importKey(
-        'raw',
-        enc.encode(serverSeed),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-      );
-
-      const message = enc.encode(`${clientSeed}:${nonce}`);
-      const sig = await window.crypto.subtle.sign('HMAC', key, message);
-      const hashArray = Array.from(new Uint8Array(sig));
-      const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-
+      const hashHex = await hmacSha256Hex(serverSeed, `${clientSeed}:${nonce}`);
       hashDisplay.textContent = hashHex;
 
       // Slices for 3 reels
@@ -327,30 +408,46 @@ async function setupRngCalculator(section: HTMLElement) {
       r2Stop.textContent = `Stop #${stops[1]}`;
       r3Stop.textContent = `Stop #${stops[2]}`;
 
+      verifyCount += 1;
+      const timestamp = new Date().toLocaleTimeString([], { hour12: false });
+
       // Check win
       if (REEL_STRIP[stops[0]] === REEL_STRIP[stops[1]] && REEL_STRIP[stops[1]] === REEL_STRIP[stops[2]]) {
-        soundManager.playWin();
-        statusEl.innerHTML = `🎉 <strong>3 of a Kind Match!</strong> (${REEL_STRIP[stops[0]]} ${REEL_STRIP[stops[0]]} ${REEL_STRIP[stops[0]]}) &bull; Provably Fair Deterministic WIN!`;
+        if (isUserAction) soundManager.playWin();
+        statusEl.innerHTML = `🎉 <strong>3 of a Kind Match!</strong> (${REEL_STRIP[stops[0]]} ${REEL_STRIP[stops[0]]} ${REEL_STRIP[stops[0]]}) &bull; Provably Fair Deterministic WIN! <span class="mono" style="opacity:0.75; font-size:0.75rem;">(Verified #${verifyCount} @ ${timestamp})</span>`;
         statusEl.style.color = '#ffd700';
       } else {
-        statusEl.innerHTML = `✅ <strong>Provably Fair Verified:</strong> 100% deterministic & tamper-proof hash digest matches client inputs.`;
+        statusEl.innerHTML = `✅ <strong>Provably Fair Verified:</strong> 100% deterministic & tamper-proof hash digest matches client inputs. <span class="mono" style="opacity:0.75; font-size:0.75rem;">(Verified #${verifyCount} @ ${timestamp})</span>`;
         statusEl.style.color = '#34d399';
+      }
+
+      if (isUserAction) {
+        [hashDisplay, r1Sym, r2Sym, r3Sym].forEach((el) => {
+          el.animate(
+            [
+              { transform: 'scale(1.04)', filter: 'brightness(1.4)' },
+              { transform: 'scale(1)', filter: 'brightness(1)' },
+            ],
+            { duration: 280, easing: 'ease-out' }
+          );
+        });
       }
     } catch (err) {
       console.error('RNG compute failed:', err);
-      hashDisplay.textContent = 'Crypto subtle not supported in this context';
+      hashDisplay.textContent = 'Crypto computation failed';
     }
   }
 
-  btnCalculate.addEventListener('click', calculate);
+  btnCalculate.addEventListener('click', () => {
+    void calculate(true);
+  });
 
   btnRandomize.addEventListener('click', () => {
-    soundManager.playClick();
     clientSeedInput.value = `seed-${Math.random().toString(36).substring(2, 9)}`;
-    nonceInput.value = String(parseInt(nonceInput.value, 10) + 1);
-    calculate();
+    nonceInput.value = String((parseInt(nonceInput.value, 10) || 0) + 1);
+    void calculate(true);
   });
 
   // Calculate immediately on load
-  calculate();
+  void calculate(false);
 }

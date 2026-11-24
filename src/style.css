@@ -99,7 +99,9 @@ header.site-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 4.5rem;
+  gap: 1rem;
+  min-height: 4.5rem;
+  padding: 0.45rem 0;
 }
 
 .logo-brand {
@@ -109,8 +111,17 @@ header.site-header {
   text-decoration: none;
   color: var(--text-main);
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   letter-spacing: -0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
 }
 
 .logo-icon {
@@ -127,8 +138,9 @@ header.site-header {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 1.25rem;
   list-style: none;
+  white-space: nowrap;
 }
 
 .nav-links a {
@@ -894,16 +906,51 @@ footer.site-footer {
 }
 
 /* Responsive tweaks */
-@media (max-width: 768px) {
+@media (max-width: 1180px) {
   .nav-links {
     display: none;
   }
   .hero-canvas-hud {
     position: static;
     margin-top: 2rem;
+    max-width: 340px;
+  }
+}
+
+@media (max-width: 768px) {
+  .telemetry-pill {
+    display: none;
+  }
+  .nav-btn-label {
+    display: none;
+  }
+  .btn-icon-sound {
+    padding: 0.45rem 0.6rem;
+  }
+  .nav-cta-btn {
+    padding: 0.45rem 0.8rem !important;
+    font-size: 0.78rem !important;
+  }
+  .logo-brand {
+    font-size: 1rem;
+    gap: 0.55rem;
+  }
+  .hero-title {
+    font-size: clamp(1.9rem, 7vw, 2.75rem);
+  }
+  .hero-canvas-hud {
+    position: static;
+    margin-top: 2rem;
     width: 100%;
+    max-width: 100%;
   }
   .games-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 440px) {
+  .nav-cta-btn {
+    display: none;
   }
 }
