@@ -243,7 +243,7 @@ export const SUBSYSTEM_TIER_PRESET: GraphPreset = {
       description: 'Game-specific business logic, theme configuration, audio manifests, symbol definitions, and title-specific scenes.',
       responsibilities: [
         'Configures 5-reel / 3-row layout coordinates and symbol indices',
-        'Binds game-specific features (Dice Rolls, Free Spins, Expanding Wilds, Gothic VFX)',
+        'Binds game-specific features (Poker Dice Rolls, Free Spins, Expanding Wilds, Halloween VFX)',
         'Extends base YKSlotScene with custom UI styling',
       ],
       inputs: ['Studio Theme Design', 'Slot Math Specs'],
@@ -291,7 +291,7 @@ export const SUBSYSTEM_TIER_PRESET: GraphPreset = {
       category: 'network',
       x: 180,
       y: 440,
-      description: 'Unified third-party wrapper: PixiJS v8 engine, Spine 2D runtimes, WebAudio API, RevoltFX particle engine, and Tween.js.',
+      description: 'Unified third-party wrapper: PixiJS v8 engine, Spine 2D runtimes, WebAudio API, Proton & RevoltFX particle engines.',
       responsibilities: [
         'Hardware-accelerated sprite batching & WebGPU/WebGL render pipelines',
         'Real-time spine bone matrix transformations',

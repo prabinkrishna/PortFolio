@@ -170,29 +170,77 @@ export function renderAboutContact(): HTMLElement {
     </div>
   `;
 
-  // Form submission feedback
+  // Form submission via Web3Forms
+  const WEB3FORMS_ACCESS_KEY = '62a74c11-6f36-4eea-b06c-2055bbec1c18';
   const form = contactSection.querySelector('#contact-form') as HTMLFormElement;
+  const nameInput = contactSection.querySelector('#contact-name') as HTMLInputElement;
+  const emailInput = contactSection.querySelector('#contact-email') as HTMLInputElement;
+  const messageInput = contactSection.querySelector('#contact-message') as HTMLTextAreaElement;
   const statusMsg = contactSection.querySelector('#contact-status-msg') as HTMLElement;
   const submitBtn = contactSection.querySelector('#btn-submit-contact') as HTMLButtonElement;
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    soundManager.playWin();
+
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const message = messageInput.value.trim();
+
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span>Message Received!</span> <span>✓</span>';
+    submitBtn.innerHTML = '<span>Sending...</span> <span>⏳</span>';
+    statusMsg.style.display = 'none';
 
-    statusMsg.style.display = 'block';
-    statusMsg.style.background = 'rgba(16, 185, 129, 0.15)';
-    statusMsg.style.color = '#34d399';
-    statusMsg.style.border = '1px solid rgba(16, 185, 129, 0.4)';
-    statusMsg.textContent = 'Thank you! Your message has been logged. Prabin will respond shortly.';
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: `Portfolio Inquiry from ${name}`,
+          from_name: name,
+          name,
+          email,
+          message,
+        }),
+      });
 
-    setTimeout(() => {
+      const result = (await response.json()) as { success: boolean; message?: string };
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Failed to send inquiry.');
+      }
+
+      soundManager.playWin();
+      submitBtn.innerHTML = '<span>Inquiry Sent!</span> <span>✓</span>';
+
+      statusMsg.style.display = 'block';
+      statusMsg.style.background = 'rgba(16, 185, 129, 0.15)';
+      statusMsg.style.color = '#34d399';
+      statusMsg.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+      statusMsg.textContent = 'Thank you! Your inquiry has been sent directly to Prabin.';
+
       form.reset();
+      setTimeout(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Send Direct Inquiry</span> <span>🚀</span>';
+        statusMsg.style.display = 'none';
+      }, 4500);
+    } catch (err) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<span>Send Direct Inquiry</span> <span>🚀</span>';
-      statusMsg.style.display = 'none';
-    }, 4500);
+
+      statusMsg.style.display = 'block';
+      statusMsg.style.background = 'rgba(244, 63, 94, 0.15)';
+      statusMsg.style.color = '#fb7185';
+      statusMsg.style.border = '1px solid rgba(244, 63, 94, 0.4)';
+      statusMsg.textContent =
+        err instanceof Error
+          ? `Could not send inquiry: ${err.message}`
+          : 'Could not send inquiry. Please try again or email prabinkrishna.m@gmail.com directly.';
+    }
   });
 
   // Footer

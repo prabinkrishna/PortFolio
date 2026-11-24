@@ -15,7 +15,7 @@ export function renderTechnicalRD(): HTMLElement {
         <span class="section-tag">Full-Stack Architecture & Cryptography</span>
         <h2 class="section-title">Technical R&D: Engine & Backend Systems</h2>
         <p class="section-desc">
-          Exploring end-to-end game engineering: from the 17-package <strong>Antigravity ECS Game Engine</strong> on the client to <strong>Provably Fair HMAC-SHA256 RNG</strong> microservices and ComfyUI asset pipelines.
+          Exploring end-to-end game engineering: from the 17-package <strong>Pixi Game Engine Wrapper (ECS)</strong> on the client to <strong>Provably Fair HMAC-SHA256 RNG</strong> microservices and ComfyUI inference, LoRA training &amp; prototyping pipelines.
         </p>
       </div>
 
@@ -118,7 +118,7 @@ export function renderTechnicalRD(): HTMLElement {
         </div>
       </div>
 
-      <!-- Antigravity Engine & Backend R&D Cards Grid -->
+      <!-- Pixi Game Engine Wrapper & Backend R&D Cards Grid -->
       <div class="rd-grid" style="margin-bottom: 3.5rem;">
         ${TECHNICAL_RD.slice(0, 2)
           .map(
@@ -181,16 +181,16 @@ export function renderTechnicalRD(): HTMLElement {
         <div style="background: #080b13; border: 1px solid rgba(255,255,255,0.08); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <span style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #cbd5e1;">
-              ⚡ End-to-End ComfyUI Automation Node Graph
+              ⚡ End-to-End ComfyUI Inference, LoRA &amp; Prototyping Graph
             </span>
-            <span style="font-size: 0.75rem; color: #a855f7; font-weight: 600;">Flux 1.0 + BiRefNet + MaxRects</span>
+            <span style="font-size: 0.75rem; color: #a855f7; font-weight: 600;">Flux 1.0 + LoRA + BiRefNet + MaxRects</span>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem;">
             <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid #38bdf8; border-radius: 0.5rem; padding: 0.85rem;">
               <div style="font-size: 0.7rem; color: #38bdf8; font-weight: 700;">NODE 01</div>
-              <div style="font-size: 0.9rem; font-weight: 700; margin: 0.2rem 0;">Conditioning & LoRA</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted);">Trained Slot Asset LoRA, SDXL/Flux Base</div>
+              <div style="font-size: 0.9rem; font-weight: 700; margin: 0.2rem 0;">Inference &amp; LoRA Training</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">Image generation inference, custom LoRA &amp; prototyping</div>
             </div>
 
             <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid #c084fc; border-radius: 0.5rem; padding: 0.85rem;">

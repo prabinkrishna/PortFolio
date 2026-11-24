@@ -5,7 +5,7 @@ export const SHIPPED_GAMES: ShippedGame[] = [
   {
     id: 'super-dice-high',
     title: 'Super Dice High',
-    subtitle: 'High-Roller Neon Dice Slot with Dual-Multiplier Scatter Wheels',
+    subtitle: 'High-Roller Poker-Themed Dice Slot with Dual-Multiplier Scatter Wheels',
     category: 'Slots',
     year: '2024 - 2025',
     company: 'YGT Gaming &bull; Suribet',
@@ -14,19 +14,19 @@ export const SHIPPED_GAMES: ShippedGame[] = [
     liveUrl: 'https://www.suribet.sr/YgtGames/YgtGame/',
     teamRole: 'Led 4 Developers from Architecture to Shipped Release',
     description:
-      'Spearheaded the engineering leadership and core PixiJS v8 reel architecture for Super Dice High on the Suribet platform. Directed a pod of 4 developers implementing dynamic dice-roll physics, cascading multipliers, dual scatter bonus wheels, and high-frequency WebSocket state synchronization.',
+      'Spearheaded the engineering leadership and core PixiJS v8 reel architecture for Super Dice High, a poker-themed slot game on the Suribet platform. Directed a pod of 4 developers implementing poker-hand & dice-roll multipliers, cascading multipliers, dual scatter bonus wheels, and high-frequency WebSocket state synchronization.',
     highlightStats: [
       { label: 'Engineering Pod', value: '4 Developers Led' },
       { label: 'Max Win Multiplier', value: '15,000x' },
       { label: 'Reel Spin Framerate', value: '60 FPS Solid' },
       { label: 'Production Status', value: 'Live on Suribet' },
     ],
-    tags: ['PixiJS v8', 'TypeScript', 'YGT Slot Engine', 'Team Leadership', 'Dice Physics', 'Suribet Live'],
+    tags: ['PixiJS v8', 'TypeScript', 'YGT Slot Engine', 'Team Leadership', 'Poker & Dice', 'Suribet Live'],
     bannerGradient: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
     accentColor: '#00f0ff',
     iconName: 'Dice',
     features: [
-      'Interactive 3D-perspective dice tumble animation with WebGL motion blur passes',
+      'Poker-themed symbol hierarchy paired with interactive 3D-perspective dice tumble animations',
       'Dual scatter trigger launching the High-Roller Bonus Wheel with accumulating dice multipliers',
       'Instant-spin turbo mode with synchronized sound tempo acceleration',
       'Zero-allocation symbol pooling ensuring 0 frame drops on mobile web',
@@ -47,7 +47,7 @@ export const SHIPPED_GAMES: ShippedGame[] = [
   {
     id: 'castle-of-curses',
     title: 'Castle of Curses',
-    subtitle: 'Dark Gothic Horror 5x4 Slot with Expanding Mystery Skeletons & Sticky Wilds',
+    subtitle: 'Spooky Halloween-Themed 5x4 Slot with Expanding Mystery Skeletons & Sticky Wilds',
     category: 'Slots',
     year: '2024 - 2025',
     company: 'YGT Gaming &bull; Suribet',
@@ -56,14 +56,14 @@ export const SHIPPED_GAMES: ShippedGame[] = [
     liveUrl: 'https://www.suribet.sr/YgtGames/YgtGame/',
     teamRole: 'Architecture Lead & Sprint Coordinator',
     description:
-      'Led the technical development of Castle of Curses, an atmospheric 5x4 gothic slot machine. Supervised shader pipeline development for dynamic torchlight vignettes, mystery symbol reveal transitions, and sticky gargoyle wild animations across free-spin cycles.',
+      'Led the technical development of Castle of Curses, an atmospheric Halloween-themed 5x4 slot machine. Supervised shader pipeline development for dynamic torchlight vignettes, haunted mystery symbol reveal transitions, and sticky gargoyle wild animations across free-spin cycles.',
     highlightStats: [
       { label: 'Grid Geometry', value: '5x4 / 40 Lines' },
       { label: 'GLSL Lighting Passes', value: 'Real-time Fog' },
       { label: 'Team Led', value: '4 Developers' },
       { label: 'Platform', value: 'Suribet Platform' },
     ],
-    tags: ['PixiJS v8', 'Custom GLSL', 'Spine 2D', 'Sticky Wilds', 'Horror VFX', 'Suribet Live'],
+    tags: ['PixiJS v8', 'Custom GLSL', 'Spine 2D', 'Sticky Wilds', 'Halloween VFX', 'Suribet Live'],
     bannerGradient: 'linear-gradient(135deg, #18181b 0%, #4c0519 50%, #881337 100%)',
     accentColor: '#f43f5e',
     iconName: 'Skull',
@@ -71,7 +71,7 @@ export const SHIPPED_GAMES: ShippedGame[] = [
       'Dynamic torchlight flicker and volumetric fog shaders rendered directly in WebGL',
       'Mystery Curse symbol transformation with bone-shattering audio and particle bursts',
       'Free Spins feature with sticky gargoyle wilds accumulating progressive multipliers',
-      'Spine 2D animated skeleton gatekeeper reacting dynamically to high-value spin hits',
+      'Spine 2D animated Halloween skeleton gatekeeper reacting dynamically to high-value spin hits',
     ],
     architectureHighlights: [
       'Engineered custom PixiJS v8 Filter pipeline for fullscreen atmospheric vignette and fog',
@@ -227,7 +227,7 @@ export const SHIPPED_GAMES: ShippedGame[] = [
       { label: 'Cold Load Time', value: '0.9s' },
       { label: 'Render Calls / Frame', value: '< 18' },
     ],
-    tags: ['PixiJS', 'TypeScript', 'EventBus', 'GSAP', 'Real-time Leaderboard', 'Ruby Seven'],
+    tags: ['PixiJS', 'TypeScript', 'EventBus', 'Spine 2D', 'Proton & RevoltFX', 'Real-time Leaderboard', 'Ruby Seven'],
     bannerGradient: 'linear-gradient(135deg, #1f1c2c 0%, #928dab 100%)',
     accentColor: '#a855f7',
     iconName: 'Sparkles',
@@ -371,13 +371,13 @@ export const SHIPPED_GAMES: ShippedGame[] = [
 
 export const TECHNICAL_RD: RDProject[] = [
   {
-    id: 'antigravity-game-engine',
-    title: 'Antigravity Game Engine (Monorepo ECS)',
+    id: 'pixi-game-engine-wrapper',
+    title: 'Pixi Game Engine Wrapper (Monorepo ECS)',
     tagline: '17-Package Modular Entity Component System (ECS) Architecture for Next-Gen HTML5 Gaming',
     category: 'Core Architecture',
     badge: 'Ongoing Next-Gen R&D',
     summary:
-      'An enterprise-grade monorepo game engine architecture engineered with PNPM workspaces, TypeScript 5.4, and PixiJS v8. Decoupled into 17 high-cohesion packages spanning Entity-Component-System (ECS) pipelines, spine 2D runtimes, input abstraction, event buses, reactive audio, and pluggable slot/reel frameworks.',
+      'An enterprise-grade monorepo game engine wrapper engineered with PNPM workspaces, TypeScript 5.4, and PixiJS v8. Decoupled into 17 high-cohesion packages spanning Entity-Component-System (ECS) pipelines, Spine 2D runtimes, Proton & RevoltFX particle engines, input abstraction, event buses, reactive audio, and pluggable slot/reel frameworks.',
     pipelineSteps: [
       {
         step: '01',
@@ -395,10 +395,10 @@ export const TECHNICAL_RD: RDProject[] = [
       },
       {
         step: '03',
-        title: 'Spine v8 & RevoltFX Integrations',
-        tool: '@esotericsoftware/spine-pixi-v8',
+        title: 'Spine 2D, Proton & RevoltFX Integrations',
+        tool: '@esotericsoftware/spine-pixi-v8 · Proton · RevoltFX',
         description:
-          'Hardware-accelerated skeletal animation supporting custom blend modes, track listeners, skin attachments, and GPU-instanced particle bursts.',
+          'Hardware-accelerated Spine 2D skeletal animation supporting custom blend modes, track listeners, and skin attachments, paired with Proton and RevoltFX particle engines for GPU-instanced bursts.',
       },
       {
         step: '04',
@@ -470,18 +470,18 @@ export const TECHNICAL_RD: RDProject[] = [
   {
     id: 'comfyui-sdxl-flux-pipeline',
     title: 'ComfyUI / SDXL / Flux Game Asset Pipeline',
-    tagline: 'Automated Generative AI Production Pipeline for Casino & Slot 2D Game Assets',
+    tagline: 'Inference for Image Generation, Custom LoRA Training & Rapid Prototyping with ComfyUI',
     category: 'Generative AI',
     badge: 'Production AI R&D',
     summary:
-      'Built an end-to-end automated asset generation and sprite packing workflow combining ComfyUI node graphs, SDXL LoRAs, and Flux 1.0 dev models. Eliminates 70% of manual asset turnaround time while maintaining pixel-perfect casino art direction, alpha mask precision, and immediate PixiJS texture atlas ingestion.',
+      'Built an end-to-end generative AI production and prototyping pipeline combining ComfyUI node graphs, SDXL/Flux 1.0 inference for image generation, and custom LoRA training. Eliminates 70% of manual asset turnaround time while enabling rapid visual prototyping, pixel-perfect casino art direction, alpha mask precision, and immediate PixiJS texture atlas ingestion.',
     pipelineSteps: [
       {
         step: '01',
-        title: 'Prompt & LoRA Conditioning',
-        tool: 'ComfyUI + SDXL + Flux 1.0',
+        title: 'Image Generation Inference & LoRA Training',
+        tool: 'ComfyUI + SDXL / Flux 1.0 + LoRA',
         description:
-          'Conditioning nodes with custom-trained slot symbol LoRAs (chilli, crowns, diamonds, fruit symbols) enforcing isometric 2.5D angles, hyper-detailed metallic specular maps, and clean lighting.',
+          'Local image generation inference paired with custom-trained slot symbol LoRAs (poker motifs, Halloween themes, crowns, diamonds) and rapid ComfyUI workflow prototyping for consistent 2.5D casino art direction.',
       },
       {
         step: '02',
@@ -528,9 +528,9 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
     skills: [
       { name: 'PixiJS (v7 & v8)', level: 98, note: 'Primary engine, custom shaders, WebGPU/WebGL' },
       { name: 'WebGL & GLSL Shaders', level: 92, note: 'Custom filters, blur, bloom, heat distortion' },
-      { name: 'Entity Component System (ECS)', level: 94, note: 'Antigravity monorepo architecture' },
+      { name: 'Entity Component System (ECS)', level: 94, note: 'Pixi Game Engine Wrapper monorepo architecture' },
       { name: 'Spine 2D Animation', level: 90, note: 'Complex character & symbol skeletons' },
-      { name: 'GSAP & Physics Tweens', level: 95, note: 'Sub-pixel fluid animation & bounce timing' },
+      { name: 'Proton & RevoltFX Particle Engines', level: 95, note: 'High-FPS GPU particle emitters & celebratory VFX' },
     ],
   },
   {
@@ -548,8 +548,8 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
     title: 'AI Workflows & Tooling',
     icon: 'Sparkles',
     skills: [
-      { name: 'ComfyUI Node Pipelines', level: 92, note: 'Internal studio GenAI platform for artists' },
-      { name: 'SDXL & Flux 1.0 Models', level: 90, note: 'Trained LoRAs for slots, symbols & UI' },
+      { name: 'ComfyUI Prototyping & Inference', level: 92, note: 'Image generation inference & rapid node prototyping' },
+      { name: 'LoRA Training (SDXL & Flux)', level: 90, note: 'Custom-trained LoRAs for slots, symbols & UI themes' },
       { name: 'ControlNet & Segmentation', level: 88, note: 'Edge guidance & alpha mask pipelines' },
       { name: 'PNPM Monorepo & Vitest', level: 92, note: 'Multi-package workspace orchestration' },
       { name: 'Vite / Docker Deployment', level: 90, note: 'Containerized microservice architecture' },

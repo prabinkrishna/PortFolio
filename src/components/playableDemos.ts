@@ -1,5 +1,4 @@
 import { SlotDemo } from '../pixi/slotDemo';
-import { DiceDemo } from '../pixi/diceDemo';
 import { ParticleSandbox, type ColorTheme } from '../pixi/particleSandbox';
 import { soundManager } from '../audio/soundManager';
 
@@ -14,7 +13,7 @@ export function renderPlayableDemos(): { element: HTMLElement; switchToTab: (tab
         <span class="section-tag">Interactive Sandbox</span>
         <h2 class="section-title">Live Playable Demos (PixiJS v8)</h2>
         <p class="section-desc">
-          Test real-time HTML5 game engineering in action. Spin a simulated 5x3 slot machine, roll interactive 3D physics dice, or manipulate GPU-accelerated particle physics right in your browser.
+          Test real-time HTML5 game engineering in action. Spin a simulated 5x3 slot machine or manipulate GPU-accelerated particle physics right in your browser.
         </p>
       </div>
 
@@ -24,10 +23,6 @@ export function renderPlayableDemos(): { element: HTMLElement; switchToTab: (tab
           <button class="demo-tab-btn active" data-tab="slot">
             <span style="font-size: 1.25rem;">🎰</span>
             <span>Neon Reels (Slot Engine)</span>
-          </button>
-          <button class="demo-tab-btn" data-tab="dice">
-            <span style="font-size: 1.25rem;">🎲</span>
-            <span>Super Dice High (Multiplier Roller)</span>
           </button>
           <button class="demo-tab-btn" data-tab="particles">
             <span style="font-size: 1.25rem;">🌌</span>
@@ -49,17 +44,12 @@ export function renderPlayableDemos(): { element: HTMLElement; switchToTab: (tab
   const tabButtons = section.querySelectorAll<HTMLButtonElement>('.demo-tab-btn');
 
   let slotDemoInstance: SlotDemo | null = null;
-  let diceDemoInstance: DiceDemo | null = null;
   let particleSandboxInstance: ParticleSandbox | null = null;
 
   function destroyCurrentDemo() {
     if (slotDemoInstance) {
       slotDemoInstance.destroy();
       slotDemoInstance = null;
-    }
-    if (diceDemoInstance) {
-      diceDemoInstance.destroy();
-      diceDemoInstance = null;
     }
     if (particleSandboxInstance) {
       particleSandboxInstance.destroy();
@@ -146,58 +136,6 @@ export function renderPlayableDemos(): { element: HTMLElement; switchToTab: (tab
     });
   }
 
-  async function loadDiceDemo() {
-    destroyCurrentDemo();
-
-    controlsBar.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
-        <div>
-          <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Multiplier Hit</div>
-          <div id="dice-mult-display" class="mono" style="font-size: 1.35rem; font-weight: 800; color: #34d399;">36x</div>
-        </div>
-
-        <div>
-          <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Doubles Streak</div>
-          <div id="dice-streak-display" class="mono" style="font-size: 1.35rem; font-weight: 800; color: #ffd700;">0 🔥</div>
-        </div>
-
-        <div>
-          <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Total Rolls</div>
-          <div id="dice-rolls-display" class="mono" style="font-size: 1.35rem; font-weight: 800; color: var(--accent-cyan);">0</div>
-        </div>
-
-        <div style="font-size: 0.85rem; color: var(--text-muted); max-width: 280px;">
-          💡 <em>Rolling doubles triggers an extra 2x bonus multiplier!</em>
-        </div>
-      </div>
-
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <button id="btn-roll-dice" class="arcade-btn arcade-btn-cyan">
-          <span>ROLL DICE</span>
-          <span>🎲</span>
-        </button>
-      </div>
-    `;
-
-    const multEl = controlsBar.querySelector('#dice-mult-display') as HTMLElement;
-    const streakEl = controlsBar.querySelector('#dice-streak-display') as HTMLElement;
-    const rollsEl = controlsBar.querySelector('#dice-rolls-display') as HTMLElement;
-    const rollBtn = controlsBar.querySelector('#btn-roll-dice') as HTMLButtonElement;
-
-    diceDemoInstance = new DiceDemo(stageContainer, (state) => {
-      multEl.textContent = `${state.multiplier}x`;
-      streakEl.textContent = `${state.streak} 🔥`;
-      rollsEl.textContent = String(state.totalRolls);
-      rollBtn.disabled = state.isRolling;
-    });
-
-    await diceDemoInstance.init();
-
-    rollBtn.addEventListener('click', () => {
-      diceDemoInstance?.roll();
-    });
-  }
-
   async function loadParticleSandbox() {
     destroyCurrentDemo();
 
@@ -257,8 +195,6 @@ export function renderPlayableDemos(): { element: HTMLElement; switchToTab: (tab
 
     if (tabId === 'slot') {
       loadSlotDemo();
-    } else if (tabId === 'dice') {
-      loadDiceDemo();
     } else if (tabId === 'particles') {
       loadParticleSandbox();
     }
