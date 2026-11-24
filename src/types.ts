@@ -21,6 +21,9 @@ export interface ShippedGame {
     players: string;
   };
   demoPreviewType?: 'slot' | 'shootout' | 'particles';
+  liveUrl?: string;
+  isLatest?: boolean;
+  teamRole?: string;
 }
 
 export interface RDProject {

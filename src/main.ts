@@ -31,19 +31,19 @@ async function bootstrap() {
         <!-- Badge -->
         <div class="hero-badge-strip">
           <span style="font-size: 1.1rem;">⚡</span>
-          <span style="font-weight: 700;">PixiJS v8 Engine Active</span>
+          <span style="font-weight: 700;">Lead Game Developer</span>
           <span style="color: var(--text-muted);">&bull;</span>
-          <span>WebGPU / WebGL Native</span>
+          <span>Managing Team of 4 Devs @ YGT Gaming (Suribet)</span>
         </div>
 
         <!-- Headline -->
         <h1 class="hero-title">
-          Engineering High-Performance <span class="glow-text-cyan" style="color: var(--accent-cyan);">HTML5 Games</span> & Next-Gen <span class="glow-text-gold" style="color: var(--accent-gold);">Slot Engines</span>
+          Engineering High-Performance <span class="glow-text-cyan" style="color: var(--accent-cyan);">HTML5 Games</span> & Modular <span class="glow-text-gold" style="color: var(--accent-gold);">Slot Engines</span>
         </h1>
 
         <!-- Subtitle -->
         <p class="hero-subtitle">
-          I'm <strong>Prabin Krishna M</strong>, a Senior Game Developer specializing in scalable PixiJS v8 game architectures, WebGL shaders, zero-GC memory optimization, and automated generative AI pipelines (ComfyUI / SDXL / Flux).
+          I'm <strong>Prabin Krishna M</strong>, a Lead Game Developer with 9+ years of commercial experience specializing in scalable PixiJS v8 architectures, provably fair cryptographic RNG backends, WebGL shaders, zero-GC optimization, and automated generative AI pipelines. Currently directing an agile pod of 4 developers shipping commercial slot titles for the <a href="https://www.suribet.sr/YgtGames/YgtGame/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-cyan); text-decoration: underline;">Suribet platform</a>.
         </p>
 
         <!-- CTA Buttons -->
@@ -54,25 +54,24 @@ async function bootstrap() {
           </a>
 
           <a href="#shipped-games" class="btn-secondary">
-            <span>Explore 6 Shipped Titles</span>
+            <span>Explore 10 Shipped Titles</span>
             <span>&rarr;</span>
           </a>
 
           <a href="#technical-rd" class="btn-secondary">
-            <span>ComfyUI & Modular Architecture</span>
+            <span>ECS & Provably Fair RNG R&D</span>
             <span>⚙️</span>
           </a>
         </div>
 
         <!-- Shipped Games Quick Pill Bar -->
-        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;">
-          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Shipped Games:</span>
-          <span class="tag-badge" style="background: rgba(0, 240, 255, 0.1); border-color: rgba(0, 240, 255, 0.3); color: #00f0ff;">Choctaw Casino</span>
-          <span class="tag-badge" style="background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.3); color: #c084fc;">FoxPlay Casino</span>
-          <span class="tag-badge" style="background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #34d399;">APlay Casino</span>
-          <span class="tag-badge" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24;">Baker's Delight</span>
-          <span class="tag-badge" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #f87171;">Burning Hot Chilli</span>
-          <span class="tag-badge" style="background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.3); color: #38bdf8;">Final Whistle</span>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.05em;">Latest Shipped (Suribet):</span>
+          <span class="tag-badge" style="background: rgba(79, 70, 229, 0.2); border-color: rgba(99, 102, 241, 0.5); color: #818cf8; font-weight: 700;">🎲 Super Dice High</span>
+          <span class="tag-badge" style="background: rgba(244, 63, 94, 0.2); border-color: rgba(244, 63, 94, 0.5); color: #fb7185; font-weight: 700;">🏰 Castle of Curses</span>
+          <span class="tag-badge" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.5); color: #38bdf8; font-weight: 700;">💎 Lucky Jewels</span>
+          <span class="tag-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.5); color: #fde047; font-weight: 700;">🍺 Bavarian Bonanza</span>
+          <span class="tag-badge" style="color: var(--text-muted);">+ 6 Flagship Titles</span>
         </div>
       </div>
 

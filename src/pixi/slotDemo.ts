@@ -15,7 +15,7 @@ const SYMBOLS: SymbolDef[] = [
   { id: 'diamond', name: 'DIAMOND', icon: '💎', color: 0x38bdf8, payout: 20 },
   { id: 'chilli', name: 'CHILLI', icon: '🌶️', color: 0xef4444, payout: 15 },
   { id: 'croissant', name: 'BAKERY', icon: '🥐', color: 0xf59e0b, payout: 12 },
-  { id: 'football', name: 'BALL', icon: '⚽', color: 0x10b981, payout: 10 },
+  { id: 'clover', name: 'CLOVER', icon: '🍀', color: 0x10b981, payout: 10 },
   { id: 'bell', name: 'BELL', icon: '🔔', color: 0xeab308, payout: 8 },
 ];
 
